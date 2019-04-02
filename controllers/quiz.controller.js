@@ -5,7 +5,7 @@ const quiz = require('../models/quiz')
 const quizController = {
 
     // To-ADD : JOI VALIDATION
-    createQuiz:  (req, res) => {
+    createQuiz: (req, res) => {
 
         const {
             subject,
@@ -43,12 +43,12 @@ const quizController = {
 
 
     },
-    viewQuiz:  (req, res) => {
+    viewQuiz: (req, res) => {
 
         const quizId = req.params.qid
         // TO-DO : add JOI Validation
 
-         quiz.findOne({
+        quiz.findOne({
                 _id: quizId
             }).lean()
             .then((fetchedQuiz) => {
@@ -66,11 +66,11 @@ const quizController = {
 
 
     },
-    addQuestion:  (req, res) => {
+    addQuestion: (req, res) => {
         const quizId = req.params.qid
         const questions = req.body.questions
         // TO-DO : add JOI Validation
-         quiz.updateOne({
+        quiz.updateOne({
                 _id: quizId
             }, {
                 $push: {
@@ -141,7 +141,7 @@ const quizController = {
             })
         }
 
-           quiz.updateOne({
+        quiz.updateOne({
                 _id: quizId
             }, {
                 $pull: {
@@ -184,7 +184,7 @@ const quizController = {
     },
 
     viewAll: (__, res) => {
-         quiz.find({}).lean()
+        quiz.find({}).lean()
             .then((fetchedQuizzes) => {
                 return res.status(200).json({
                     quizzes: fetchedQuizzes
