@@ -5,7 +5,7 @@ const quiz = require('../models/quiz')
 const quizController = {
 
     // To-ADD : JOI VALIDATION
-    createQuiz: (req, res) => {
+    createQuiz: async (req, res) => {
 
         const {
             subject,
@@ -18,59 +18,65 @@ const quizController = {
         if (questions) tempQuiz.questions = _.castArray(questions)
 
 
+        try {
+            let saved = await tempQuiz.save()
 
-        tempQuiz.save()
-            .then((done) => {
-
-                if (!done) return res.status(500).json({
+            if (!saved) {
+                return res.status(500).json({
                     message: 'couldnt create quiz'
 
                 })
-                return res.status(200).json({
-                    message: 'added quiz',
-                    quiz: tempQuiz
-
-                })
+            }
+            return res.status(200).json({
+                message: 'added quiz',
+                quiz: tempQuiz
 
             })
-            .catch((error) => {
-                return res.status(400).json({
-                    message: error.errors.subject.message
+        } catch (error) {
+            return res.status(400).json({
+                message: error.errors.subject.message
 
-                })
             })
-
-
+        }
 
     },
-    viewQuiz: (req, res) => {
+    viewQuiz: async (req, res) => {
 
         const quizId = req.params.qid
         // TO-DO : add JOI Validation
-
-        quiz.findOne({
+        try {
+            let foundQuiz = await quiz.findOne({
                 _id: quizId
             }).lean()
-            .then((fetchedQuiz) => {
-                return res.status(200).json({
-                    quiz: fetchedQuiz
-                })
-            })
-            .catch((__) => {
+
+            if (!foundQuiz) {
                 return res.status(400).json({
                     message: "couldnt find a quiz with the specified id"
                 })
+
+            }
+            return res.status(200).json({
+                quiz: foundQuiz
             })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                message: "request params doesnt include a valid quiz id"
+            })
+        }
+
 
 
 
 
     },
-    addQuestion: (req, res) => {
+    addQuestion: async (req, res) => {
         const quizId = req.params.qid
         const questions = req.body.questions
         // TO-DO : add JOI Validation
-        quiz.updateOne({
+
+        try {
+            let updated = await quiz.updateOne({
                 _id: quizId
             }, {
                 $push: {
@@ -78,33 +84,28 @@ const quizController = {
                         $each: _.castArray(questions)
                     }
                 }
-            }).then((updated) => {
-
-                const success = updated.ok === 1 && updated.nModified === 1
-                if (success) {
-                    return res.status(200).json({
-                        message: 'added questions to the specified quiz successfully',
-
-                    })
-                } else {
-                    return res.status(500).json({
-                        message: 'couldnt add questions to the specified quiz ',
-
-                    })
-                }
-            })
-            .catch((error) => {
-
-                let message
-                if (error.path === '_id') message = "couldn't find a quiz for the specified ID"
-                else message = "no {questions} attribute found in the incoming body payload" // TO-DO : HANDLE IN JOI
+            }).lean()
+            console.log(updated)
+            const success = updated.ok === 1 && updated.nModified === 1
+            if (!success) {
 
                 return res.status(500).json({
-                    message: message
+                    message: 'couldnt add questions to the specified quiz ',
 
                 })
+            }
+            return res.status(200).json({
+                message: 'added questions to the specified quiz successfully',
 
             })
+
+        } catch (error) {
+            return res.status(500).json({
+                message: error
+
+            })
+        }
+
 
 
 
@@ -123,25 +124,28 @@ const quizController = {
          using FindOne as a open/closed gate for the update function
          
                */
-        let questionExists = await quiz.findOne({
-            $and: [{
-                _id: quizId
-            }, {
-                'questions._id': questionId
-            }]
-
-        })
 
 
-
-        if (!questionExists) {
-            return res.status(500).json({
-                message: "couldn't find the specified question id @ the specified quiz ID"
+        try {
+            //Search if the questions exists in the specified quiz
+            let questionExists = await quiz.findOne({
+                $and: [{
+                    _id: quizId
+                }, {
+                    'questions._id': questionId
+                }]
 
             })
-        }
 
-        quiz.updateOne({
+            if (!questionExists) {
+                return res.status(500).json({
+                    message: "couldn't find the specified question id @ the specified quiz ID"
+
+                })
+            }
+
+            // If exists -> delete it
+            let updated = await quiz.updateOne({
                 _id: quizId
             }, {
                 $pull: {
@@ -152,50 +156,49 @@ const quizController = {
             }, {
 
             }).lean()
-            .then((updated) => {
-                console.log(updated)
 
-                const success = updated.ok === 1 && updated.nModified === 1
+            const success = updated.ok === 1 && updated.nModified === 1
 
-                if (success) {
+            if (!success) {
 
-                    return res.status(200).json({
-                        message: 'Deleted question with the specified ID @ the specified quiz ID',
-
-                    })
-                } else {
-                    return res.status(500).json({
-                        message: 'couldnt delete question'
-
-                    })
-                }
-            })
-            .catch((error) => {
                 return res.status(500).json({
-                    message: error
+                    message: 'couldnt delete question'
 
                 })
+            }
+
+            return res.status(200).json({
+                message: 'Deleted question with the specified ID @ the specified quiz ID',
 
             })
+
+        } catch (error) {
+            return res.status(500).json({
+                message: error
+
+            })
+        }
+
 
 
 
 
     },
 
-    viewAll: (__, res) => {
-        quiz.find({}).lean()
-            .then((fetchedQuizzes) => {
-                return res.status(200).json({
-                    quizzes: fetchedQuizzes
-                })
+    viewAll: async (__, res) => {
+        try {
+            let quizzes = await quiz.find({}).lean()
+
+            return res.status(200).json({
+                quizzes: fetchedQuizzes
             })
-            .catch((__) => {
-                return res.status(500).json({
-                    message: "coudlnt fetch quizzes"
-                })
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "No quizzes exist to return"
             })
+        }
+
     }
 }
-
 module.exports = quizController
