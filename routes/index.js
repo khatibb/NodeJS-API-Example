@@ -11,10 +11,10 @@ const quizController=require('../controllers/quiz.controller')
 
 //subject name + questions
 router.post('/api/v1/quiz',quizController.createQuiz)
-router.get('/api/v1/quiz',quizController.viewAll)
+router.get('/api/v1/quiz/:qid',quizController.viewQuiz)
 
-router.post('api/v1/quiz/:id/question',quizController.addQuestion)
-router.delete('api/v1/quiz/:id/question/:id',quizController.deleteQuestion)
+router.post('/api/v1/quiz/:qid/question',quizController.addQuestion)
+router.delete('/api/v1/quiz/:qid/question/:qqid',quizController.deleteQuestion)
 
 
 module.exports = router;
