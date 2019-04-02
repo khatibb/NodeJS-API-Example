@@ -16,5 +16,6 @@ router.get('/api/v1/quiz/:qid',quizController.viewQuiz)
 router.post('/api/v1/quiz/:qid/question',quizController.addQuestion)
 router.delete('/api/v1/quiz/:qid/question/:qqid',quizController.deleteQuestion)
 
+router.get('/api/v1/quiz',quizController.viewAll)
 
 module.exports = router;

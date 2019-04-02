@@ -242,10 +242,21 @@ const quizController = {
 
 
 
+    },
+
+    viewAll: async (__, res) => {
+        await quiz.find({}).lean()
+            .then((fetchedQuizzes) => {
+                return res.status(200).json({
+                    quizzes: fetchedQuizzes
+                })
+            })
+            .catch((__) => {
+                return res.status(500).json({
+                    message: "coudlnt fetch quizzes"
+                })
+            })
     }
-
-
-
 }
 
 module.exports = quizController
