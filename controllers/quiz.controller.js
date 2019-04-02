@@ -59,7 +59,6 @@ const quizController = {
                 quiz: foundQuiz
             })
         } catch (error) {
-            console.log(error)
             return res.status(500).json({
                 message: "request params doesnt include a valid quiz id"
             })
@@ -100,8 +99,9 @@ const quizController = {
             })
 
         } catch (error) {
+           
             return res.status(500).json({
-                message: error
+                message: 'a parameter is missing from incoming request body {questions}'
 
             })
         }
@@ -174,7 +174,7 @@ const quizController = {
 
         } catch (error) {
             return res.status(500).json({
-                message: error
+                message: 'parameter(s) missing from incoming request url or not valid'
 
             })
         }
