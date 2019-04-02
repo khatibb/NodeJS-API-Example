@@ -5,7 +5,7 @@ const quiz = require('../models/quiz')
 const quizController = {
 
     // To-ADD : JOI VALIDATION
-    createQuiz: async (req, res) => {
+    createQuiz:  (req, res) => {
 
         const {
             subject,
@@ -39,77 +39,16 @@ const quizController = {
 
                 })
             })
-        //If an error occured while saving to the DB
-
-
-
-        // const {
-        //     subject,
-        //     questions
-        // } = req.body
-
-        // let tempQuiz = new quiz({
-        //     subject: _.toString(subject)
-        // })
-
-
-        // let saved = tempQuiz.save()
-        // //If an error occured while saving to the DB
-        // if (!saved) return res.status(SERVICE_UNAVAILABLE).json({
-        //     message: 'Couldnt create quiz'
-        // })
-        // //If the incoming payload didnt have a questions attribute end here , Otherwise continue
-        // if (!questions) return res.status(OK).json({
-        //     message: 'Created Quiz Successfully',
-        //     quiz: tempQuiz
-        // })
-
-        // //Add questions to quiz
-        // const updated = await quiz.updateOne({
-        //     '_id': tempQuiz._id
-        // }, {
-        //     $push: {
-        //         questions: {
-        //             $each: _.castArray(questions)
-        //         }
-        //     }
-        // }, {
-        //     new: true
-        // })
-
-        // const success = updated.ok === 1 && updated.nModified === 1
-
-
-        // //Fetch Added quiz with it's questions from DB
-        // let addedQuiz= await quiz.findOne({'_id':tempQuiz._id})
-
-        // if (success&&addedQuiz) {
-        //     return res.status(OK).json({
-        //         message: 'added Quiz with Questions',
-        //         quiz: addedQuiz
-        //     })
-        // }
-
-
-        // return res.status(500).json({
-        //     message:'Coudnt add questions to the specified quiz'
-
-        // })
-
-
-
-
-
 
 
 
     },
-    viewQuiz: async (req, res) => {
+    viewQuiz:  (req, res) => {
 
         const quizId = req.params.qid
         // TO-DO : add JOI Validation
 
-        await quiz.findOne({
+         quiz.findOne({
                 _id: quizId
             }).lean()
             .then((fetchedQuiz) => {
@@ -127,11 +66,11 @@ const quizController = {
 
 
     },
-    addQuestion: async (req, res) => {
+    addQuestion:  (req, res) => {
         const quizId = req.params.qid
         const questions = req.body.questions
         // TO-DO : add JOI Validation
-        await quiz.updateOne({
+         quiz.updateOne({
                 _id: quizId
             }, {
                 $push: {
@@ -202,7 +141,7 @@ const quizController = {
             })
         }
 
-        await quiz.updateOne({
+           quiz.updateOne({
                 _id: quizId
             }, {
                 $pull: {
@@ -244,8 +183,8 @@ const quizController = {
 
     },
 
-    viewAll: async (__, res) => {
-        await quiz.find({}).lean()
+    viewAll: (__, res) => {
+         quiz.find({}).lean()
             .then((fetchedQuizzes) => {
                 return res.status(200).json({
                     quizzes: fetchedQuizzes
