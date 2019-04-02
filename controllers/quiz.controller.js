@@ -190,7 +190,7 @@ const quizController = {
             let quizzes = await quiz.find({}).lean()
 
             return res.status(200).json({
-                quizzes: fetchedQuizzes
+                quizzes: quizzes
             })
 
         } catch (error) {
