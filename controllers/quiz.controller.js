@@ -84,7 +84,6 @@ const quizController = {
                     }
                 }
             }).lean()
-            console.log(updated)
             const success = updated.ok === 1 && updated.nModified === 1
             if (!success) {
 
