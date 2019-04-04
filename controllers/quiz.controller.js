@@ -71,34 +71,43 @@ const quizController = {
     },
     addQuestion: async (req, res) => {
         const quizId = req.params.qid
-        const questions = req.body.questions
+        const questions = _.castArray(req.body.questions)
         // TO-DO : add JOI Validation
 
         try {
+            //Add the incoming question(s) to the respective id@quiz
             let updated = await quiz.updateOne({
                 _id: quizId
             }, {
                 $push: {
                     questions: {
-                        $each: _.castArray(questions)
+                        $each: questions
                     }
                 }
             }).lean()
+
             const success = updated.ok === 1 && updated.nModified === 1
             if (!success) {
-
                 return res.status(500).json({
                     message: 'couldnt add questions to the specified quiz ',
 
                 })
             }
+            ///Fetch the updated quiz to send it back as a response
+            let updatedQuiz = await quiz.findOne({
+                _id: quizId
+            })
+            if (!updatedQuiz) res.status(500).send({
+                messasge: 'cannot find the specified id@quiz'
+            })
             return res.status(200).json({
                 message: 'added questions to the specified quiz successfully',
+                updatedQuiz: updatedQuiz
 
             })
 
         } catch (error) {
-           
+
             return res.status(500).json({
                 message: 'a parameter is missing from incoming request body {questions}'
 
@@ -168,6 +177,7 @@ const quizController = {
 
             return res.status(200).json({
                 message: 'Deleted question with the specified ID @ the specified quiz ID',
+                questionId:questionId
 
             })
 

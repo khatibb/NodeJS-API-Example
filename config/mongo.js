@@ -1,12 +1,21 @@
 const mongoose = require('mongoose')
+module.exports = async (URL) => {
 
-module.exports = (URL) => {
-  mongoose.connect(URL, { useNewUrlParser: true, useCreateIndex: true })
-  const db = mongoose.connection
+  try {
 
-  db.on('error', console.error.bind(console, 'connection error:'))
+    mongoose.connect(URL, {
+      useNewUrlParser: true,
+      useCreateIndex: true
+    })
+    let db =  mongoose.connection
 
-  db.once('open', () => {
-    console.log('Connected to MongoDB on ' + URL)
-  })
+
+    await db.once('open', () => {
+      console.log('Connected to MongoDB on ' + URL)
+
+    })
+  } catch (error) {
+    console.error.bind(console, 'connection error:')
+
+  }
 }

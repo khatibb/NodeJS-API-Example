@@ -16,7 +16,7 @@ const middleware = {
 
 
         }
-        return res.status(400).json('You cannot perform this action unless you are logged in')
+        return res.status(401).json('You cannot perform this action unless you are logged in')
 
 
     }
