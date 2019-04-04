@@ -16,7 +16,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await quiz.deleteMany({})
-  await  mongoose.disconnect()
+    await mongoose.disconnect()
 })
 
 
