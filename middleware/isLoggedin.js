@@ -3,14 +3,18 @@ const _ = require('lodash')
 const middleware = {
     // VERIFY USER LOGGED IN
     isLoggedIn: function (req, res, next) {
+
         var incomingToken = req.body.token || req.query.token || req.headers['x-fake-token']
     
         if (incomingToken) {
-            let preDefinedToken =process.env.FAKE_TOKEN
+
+            const preDefinedToken =process.env.FAKE_TOKEN
 
             if (_.toString(incomingToken) === _.toString(preDefinedToken)) {
+
                 req.decoded = incomingToken
                 return next()
+            
             }
             return res.status(401).json('Not Authorized..please try to login again')
 

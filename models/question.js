@@ -1,18 +1,18 @@
-let mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-let questionSchema = new mongoose.Schema({
+const questionSchema = new mongoose.Schema({
 
     question: String,
     category: {
         type: String,
-        enum: ['shortAnswer', 'singleChoice', 'multipleChoices']
+        enum: [ 'shortAnswer', 'singleChoice', 'multipleChoices' ]
     },
-    answers: [{
+    answers: [ {
         answer: String
-    }]
+    } ]
 
 
 }, {
     timestamps: true
 })
-module.exports = mongoose.model('questionSchema',questionSchema)
+module.exports = mongoose.model('questionSchema', questionSchema)

@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+var express = require('express')
+var router = express.Router()
 
 const quizController=require('../controllers/quiz.controller')
 const middleWare=require('../middleware/isLoggedin')
@@ -15,4 +15,4 @@ router.delete('/api/v1/quiz/:qid/question/:qqid',middleWare.isLoggedIn,quizContr
 
 router.get('/api/v1/quiz',quizController.viewAll)
 
-module.exports = router;
+module.exports = router
